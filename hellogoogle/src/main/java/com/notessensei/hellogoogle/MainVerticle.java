@@ -19,12 +19,16 @@ import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 /**
+ *  Sample Vert.x verticle providing two endpoints / and /secret
+ *  /secret triggers authentication against Google. If successful it
+ *  shows the 
+ * 
  * @author Stephan
  */
 public class MainVerticle extends AbstractVerticle {
 
   /**
-   * @param args
+   * @param args args[0] is the file with ClientID, ClientSecret
    */
   public static void main(final String[] args) {
     String propertyFileName = args.length < 1 ? "/.env" : args[0];
@@ -89,8 +93,8 @@ public class MainVerticle extends AbstractVerticle {
   private void setupGoogleAuth(final Router router, final String path) {
 
     final OAuth2ClientOptions options = new OAuth2ClientOptions()
-        .setClientID(CLIENT_ID)
-        .setClientSecret(CLIENT_SECRET)
+        .setClientID(this.CLIENT_ID)
+        .setClientSecret(this.CLIENT_SECRET)
         .setSite("https://accounts.google.com");
 
     OpenIDConnectAuth.discover(this.getVertx(), options, ar -> {
