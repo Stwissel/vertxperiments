@@ -21,7 +21,9 @@ import io.vertx.ext.web.sstore.LocalSessionStore;
 /**
  *  Sample Vert.x verticle providing two endpoints / and /secret
  *  /secret triggers authentication against Google. If successful it
- *  shows the 
+ *  shows the client object
+ *  
+ *  Credentials here: https://console.developers.google.com/
  * 
  * @author Stephan
  */
