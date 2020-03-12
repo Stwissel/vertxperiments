@@ -1,4 +1,4 @@
-package com.notessensei.hellogoogle;
+package com.notessensei.hellosfdc;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -20,10 +20,10 @@ import io.vertx.ext.web.sstore.LocalSessionStore;
 
 /**
  *  Sample Vert.x verticle providing two endpoints / and /secret
- *  /secret triggers authentication against Google. If successful it
+ *  /secret triggers authentication against Salesforce. If successful it
  *  shows the client object
  *  
- *  Credentials here: https://console.developers.google.com/
+ *  Credentials here: Setup - Apps - Connected Apps
  * 
  * @author Stephan
  */
@@ -71,7 +71,7 @@ public class MainVerticle extends AbstractVerticle {
     this.getVertx().createHttpServer().requestHandler(router).listen(8765, http -> {
       if (http.succeeded()) {
         startPromise.complete();
-        System.out.println("HTTP server Google Auth demo started on port 8765");
+        System.out.println("HTTP server for SFDC demo started on port 8765");
       } else {
         startPromise.fail(http.cause());
       }
@@ -89,6 +89,7 @@ public class MainVerticle extends AbstractVerticle {
       ctx.response().putHeader("Content-Type", "text/plain").end("Alles Sch...");
       return;
     }
+    // Pretty useless, need a call to "sub" to provide anything useful
     ctx.response().putHeader("Content-Type", "application/json").end(user.principal().encodePrettily());
   }
 
@@ -96,16 +97,15 @@ public class MainVerticle extends AbstractVerticle {
 
     final OAuth2ClientOptions options = new OAuth2ClientOptions()
         .setClientID(this.CLIENT_ID)
-        .setClientSecret(this.CLIENT_SECRET)
-        .setSite("https://accounts.google.com");
+        /*.setClientSecret(this.CLIENT_SECRET)*/
+        .setSite("https://login.salesforce.com");
 
     OpenIDConnectAuth.discover(this.getVertx(), options, ar -> {
       if (ar.succeeded()) {
         final OAuth2Auth authProvider = ar.result();
         final JsonObject extraParams = new JsonObject()
-            .put("scope", "email")
             .put("redirect_uri", "http://localhost:8765/auth/callback")
-            .put("prompt", "select_account");
+            .put("client_secret",this.CLIENT_SECRET);
         final OAuth2AuthHandler handler = OAuth2AuthHandler
             .create(this.getVertx(), authProvider)
             .extraParams(extraParams)
